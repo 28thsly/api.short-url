@@ -2,23 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\URL_Mapping;
+use App\Models\URLMapping;
 use Illuminate\Http\Request;
+use App\Repository\SchemeGenerator;
 
 class EncodeController extends Controller
 {
 
     /**
      * 
-     * This function takes a long url and encode into a 6 characters 
+     * This contoller class is responsible for the encoding long URls into short URLs 
+     */
+
+
+    /**
+     * 
+     * This function receives client request to encode a long URL 
      * Expected parameters:
      * long_url: string 
-     * user_id: int (optional)
+     * scheme: string
      * 
      * Response:
      * status_code: 200 | 400
      * short_url: string
      */
+
+     
 
     public function encodeURL(Request $request){
 
@@ -26,44 +35,68 @@ class EncodeController extends Controller
             
             //receieve the requests
             $long_url = $request->long_url;
-            $user_id = $request->user_id ?? null;
+            $scheme = $request->scheme ?? 'ALPHANUMERIC';
 
-            //encode the URL
-            $encoded_url = $this->encode($long_url);
+            //generate short URL
+            $short_code = $this->generateShortCode($scheme);
 
             //store record in the DB
-            $url_map = new URL_Mapping;
-            $url_map->long_name = $long_url;
-            $url_map->short_name = $encoded_url; 
-            $url_map->save();
+            // $url_map = new URLMapping;
+            // $url_map->long_url = $long_url;
+            // $url_map->short_code = $short_code; 
+            // $url_map->save();
+
+            //generate short URL
+            $short_url = $_SERVER['SERVER_NAME'] . '/' . $short_code;
 
             //return response
             return response()->json([
-                'short_url' => $encoded_url,
-                'long_url' => $long_url
+
+                'long_url' => $long_url,
+                'short_url' => $short_url,
+                'encoding_scheme' => $scheme,
+
             ], 200);
 
-        } catch (\Throwable $th) {
-            return response()->json('Error occured', 400);
+        } catch (\Exception $e) {
+
+            return response()->json($e->getMessage(), 400);
+
         }
 
     }
 
     /**
      * 
-     * This function uses the following encoding scheme [a-z][A-Z][0-9] 
+     * This function generate a short code using the appropriate scheme of length 6.
      * Expected parameters:
-     * long_url: string 
+     * scheme: string 
      * 
-     * Response:
-     * short_url: string
+     * Return:
+     * short_code: string
      */
 
-    public function encode($long_url)
+    public function generateShortCode($scheme = 'ALPHANUMERIC')
     {
 
-        //making this a stub function for now
-        return 'iueAZ4';
+        $short_code = '';
+        
+        //Instantiate scheme generator class
+        $scheme_gen = new SchemeGenerator;
+
+        //Invoke the appropriate scheme for the condition
+        switch ($scheme) {
+            
+            case 'ALPHANUMERIC':
+                $short_code = $scheme_gen->generateAlphanumeric();
+                break;
+            
+            default:
+                throw new \Exception("Invalid Scheme Type Passed", 700);
+                break;
+        }
+
+        return $short_code;
 
     }
 

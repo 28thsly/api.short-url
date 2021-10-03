@@ -37,19 +37,28 @@ class EncodeController extends Controller
             $long_url = $request->long_url;
             $scheme = $request->scheme ?? 'ALPHANUMERIC';
 
-            //generate short URL
-            $short_code = $this->generateShortCode($scheme);
+            $bool = true;
+
+            while( $bool )
+            {
+                //generate a random short code
+                $short_code = $this->generateShortCode($scheme);
+            
+                //check if the code already exists in the DB
+                $bool = (boolean) URLMapping::where('short_code', $short_code)->count();
+
+            }
 
             //store record in the DB
-            // $url_map = new URLMapping;
-            // $url_map->long_url = $long_url;
-            // $url_map->short_code = $short_code; 
-            // $url_map->save();
+            $url_map = new URLMapping;
+            $url_map->long_url = $long_url;
+            $url_map->short_code = $short_code; 
+            $url_map->save();
 
             //generate short URL
-            $short_url = $_SERVER['SERVER_NAME'] . '/' . $short_code;
+            $short_url = $_SERVER['SERVER_NAME'] . '/' . $short_code; 
 
-            //return response
+            // //return response
             return response()->json([
 
                 'long_url' => $long_url,
@@ -82,15 +91,19 @@ class EncodeController extends Controller
         $short_code = '';
         
         //Instantiate scheme generator class
-        $scheme_gen = new SchemeGenerator;
+        $scheme_instance = new SchemeGenerator;
 
         //Invoke the appropriate scheme for the condition
         switch ($scheme) {
             
             case 'ALPHANUMERIC':
-                $short_code = $scheme_gen->generateAlphanumeric();
+                $short_code = $scheme_instance->generateAlphanumeric();
                 break;
-            
+
+            case 'EMOJI':
+                $short_code = $scheme_instance->generateEmoji();
+                break;
+    
             default:
                 throw new \Exception("Invalid Scheme Type Passed", 700);
                 break;

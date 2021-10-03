@@ -20,7 +20,7 @@ class CreateUrlMappingTable extends Migration
             $table->string('short_code');
             $table->date('expire_at')->nullable();
             $table->timestamps();
-            $table->index('short_url_code');
+            $table->index('short_code');
         });
     }
 

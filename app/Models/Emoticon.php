@@ -5,9 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class URLMapping extends Model
+class Emoticon extends Model
 {
     use HasFactory;
-
-    protected $table = 'url_mapping';
 }

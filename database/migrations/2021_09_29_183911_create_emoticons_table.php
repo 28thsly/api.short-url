@@ -18,6 +18,7 @@ class CreateEmoticonsTable extends Migration
             $table->string('emoji_name');
             $table->string('emoji_unicode');
             $table->timestamps();
+            $table->index('emoji_unicode');
         });
     }
 

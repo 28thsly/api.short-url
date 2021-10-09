@@ -27,25 +27,38 @@ class EncodeController extends Controller
      * short_url: string
      */
 
-     
-
     public function encodeURL(Request $request){
 
         try {
             
             //receieve the requests
             $long_url = $request->long_url;
+            $short_code = $request->custom_url ?? null;
             $scheme = $request->scheme ?? 'ALPHANUMERIC';
 
-            $bool = true;
-
-            while( $bool )
-            {
-                //generate a random short code
-                $short_code = $this->generateShortCode($scheme);
             
-                //check if the code already exists in the DB
-                $bool = (boolean) URLMapping::where('short_code', $short_code)->count();
+            //Generate short code if the scheme is not CUSTOM
+            if ($scheme != 'CUSTOM') 
+            {
+
+                $bool = true;
+
+                while( $bool )
+                {
+                    //generate a random short code
+                    $short_code = $this->generateShortCode($scheme);
+                
+                    //check if the code already exists in the DB
+                    $bool = $this->shortCodeExists($short_code);
+    
+                }
+                    
+            }
+
+            //If the custom code already exists in the DB, throw an exception
+            if ($this->shortCodeExists($short_code)) {
+                
+                throw new \Exception("Custom code already exists", 701);
 
             }
 
@@ -74,6 +87,7 @@ class EncodeController extends Controller
         }
 
     }
+
 
     /**
      * 
@@ -113,5 +127,22 @@ class EncodeController extends Controller
 
     }
 
+
+    /**
+     * 
+     * This function check if a short code already exists in the DB.
+     * Expected parameters:
+     * short_code: string 
+     * 
+     * Return:
+     * status: boolean
+     */
+
+    public function shortCodeExists($short_code)
+    {
+
+        return (boolean) URLMapping::where('short_code', $short_code)->count();
+
+    }
 
 }

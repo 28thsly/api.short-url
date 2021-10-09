@@ -18,6 +18,7 @@ class CreateUrlMappingTable extends Migration
             $table->bigInteger('user_id')->nullable();
             $table->text('long_url');
             $table->string('short_code');
+            $table->string('scheme_type');
             $table->date('expire_at')->nullable();
             $table->timestamps();
             $table->index('short_code');

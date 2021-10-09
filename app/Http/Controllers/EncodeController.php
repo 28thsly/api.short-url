@@ -68,6 +68,7 @@ class EncodeController extends Controller
             $url_map = new URLMapping;
             $url_map->long_url = $long_url;
             $url_map->short_code = $short_code; 
+            $url_map->scheme_type = $scheme;
             $url_map->save();
 
             //generate short URL

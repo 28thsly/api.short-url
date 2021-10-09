@@ -21,3 +21,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('v1/encode', [EncodeController::class, 'encodeURL']);
+Route::get('v1/resolve', [ResolveController::class, 'resolveURL']);

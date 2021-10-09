@@ -27,9 +27,11 @@ class EncodeController extends Controller
      * short_url: string
      */
 
-    public function encodeURL(Request $request){
+    public function encodeURL(Request $request)
+    {
 
-        try {
+        try 
+        {
             
             //receieve the requests
             $long_url = $request->long_url;
@@ -58,7 +60,7 @@ class EncodeController extends Controller
             //If the custom code already exists in the DB, throw an exception
             if ($this->shortCodeExists($short_code)) {
                 
-                throw new \Exception("Custom code already exists", 701);
+                throw new \Exception("Custom URL already exists", 701);
 
             }
 
